@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRUEBA CULQI</title>
+    <!-- Incluye Culqi Checkout en tu sitio web-->
+    <script src="https://checkout.culqi.com/js/v3"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    Producto 1
+    <input type="button" value="PAGAR" id="buyButton" data-producto="Producto 2" data-precio=3000>
+    
+    <script>
+        // Configura tu llave pública
+        Culqi.publicKey = 'pk_test_3cfac2ae93484b61';
+        
+        
+        var producto = "";
+        var precio = "";
+            
+
+        // Usa la funcion Culqi.open() en el evento que desees
+        $('#buyButton').on('click', function(e) {
+
+            producto = $(this).attr('data-producto');
+            precio = $(this).attr('data-precio');
+
+            //--------------------
+
+            // Configura tu Culqi Checkout
+            Culqi.settings({
+                title: producto,
+                currency: 'PEN',
+                description: producto,
+                amount: precio
+            });
+            
+            //----------------------
+
+            // Abre el formulario con las opciones de Culqi.settings
+            Culqi.open();
+            e.preventDefault();
+        });
+        //Enviar el ID del objeto token hacia tu servidor
+        function culqi() {
+            if (Culqi.token) { // ¡Objeto Token creado exitosamente!
+                var token = Culqi.token.id;
+                //alert('Se ha creado un token:' + token);
+
+                var email = Culqi.token.email;
+
+                //------------------------------
+
+                var data = {
+                    producto: producto,
+                    precio: precio,
+                    token: token,
+                    email: email
+                };
+
+                var url = 'proceso.php';
+
+                $.post(url, data, function(res){
+                    alert(res);
+                });
+
+                //------------------------------
+
+                //En esta linea de codigo debemos enviar el "Culqi.token.id"
+                //hacia tu servidor con Ajax
+            } else { // ¡Hubo algún problema!
+                // Mostramos JSON de objeto error en consola
+                console.log(Culqi.error);
+                alert(Culqi.error.mensaje);
+            };
+        };
+
+    </script>
+</body>
+</html>
